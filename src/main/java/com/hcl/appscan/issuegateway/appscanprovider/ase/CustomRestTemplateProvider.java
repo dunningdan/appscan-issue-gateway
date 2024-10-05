@@ -29,8 +29,7 @@ public class CustomRestTemplateProvider extends RestTemplate{
 				customRestTemplate = getRestTemplate();
 			}  
 			catch(Exception e) {
-				e.printStackTrace();
-			}
+}
 		}
 		return customRestTemplate;
 	}
