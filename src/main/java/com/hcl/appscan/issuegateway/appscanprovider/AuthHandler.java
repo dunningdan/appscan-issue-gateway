@@ -4,6 +4,8 @@
  */
 package com.hcl.appscan.issuegateway.appscanprovider;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import java.util.Collections;
 import java.util.Map;
 
@@ -45,7 +47,7 @@ public abstract class AuthHandler {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(getAuthorizationHeaderName(), bearerToken);
 			HttpEntity<Object> entity = new HttpEntity<>(headers);
-			ResponseEntity<AppsCountResponse> response = restTemplate.exchange(url + getValidationAPI(), HttpMethod.GET,
+			ResponseEntity<AppsCountResponse> response = restTemplate.exchange(Urls.create(url + getValidationAPI(), Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(), HttpMethod.GET,
 					entity, AppsCountResponse.class);
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return true;

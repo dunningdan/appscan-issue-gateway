@@ -8,6 +8,8 @@ package com.hcl.appscan.issuegateway.appscanprovider.asoc;
 import com.hcl.appscan.issuegateway.errors.ResponseErrorHandler;
 import com.hcl.appscan.issuegateway.issues.AppScanIssue;
 import com.hcl.appscan.issuegateway.issues.PushJobData;
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -53,7 +55,7 @@ public class ASOCReportHandler {
 				headers.add("Authorization", ASOCAuthHandler.getInstance().getBearerToken(jobData));
 				HttpEntity<String> entity = new HttpEntity<>(headers);
 
-				ResponseEntity<byte[]> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, byte[].class, "1");
+				ResponseEntity<byte[]> responseEntity = restTemplate.exchange(Urls.create(url, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(), HttpMethod.GET, entity, byte[].class, "1");
 				if (responseEntity.getStatusCode().is2xxSuccessful()) {
 					File tempFile = File.createTempFile("appscan", ".html");
 					try (FileOutputStream stream = new FileOutputStream(tempFile)) {

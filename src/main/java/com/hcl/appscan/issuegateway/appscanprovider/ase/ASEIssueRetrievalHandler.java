@@ -5,6 +5,8 @@
 package com.hcl.appscan.issuegateway.appscanprovider.ase;
 
 import static com.hcl.appscan.issuegateway.appscanprovider.ase.ASEConstants.HEADER_ASC_XSRF_TOKEN;
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 
 import java.net.HttpCookie;
 import java.net.URI;
@@ -52,7 +54,7 @@ public class ASEIssueRetrievalHandler implements IIssueRetrievalHandler {
 	        
 	        HttpEntity<Object> entity = new HttpEntity<Object>(headers);
 	        URI theURI = urlBuilder.build().encode().toUri();
-	        ResponseEntity<AppScanIssue[]> response = restTemplate.exchange(theURI, HttpMethod.GET, entity, AppScanIssue[].class);
+	        ResponseEntity<AppScanIssue[]> response = restTemplate.exchange(Urls.create(theURI, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(), HttpMethod.GET, entity, AppScanIssue[].class);
 	        if (!response.getStatusCode().is2xxSuccessful()) {
 	        	errors.add("Error: Receieved a " + response.getStatusCodeValue() + " status code from " + theURI);
 	        	logger.error("Error: Receieved a " + response.getStatusCodeValue() + " status code from " + theURI);
@@ -88,7 +90,7 @@ public class ASEIssueRetrievalHandler implements IIssueRetrievalHandler {
 			headers.add("Accept-Language", "en-US,en;q=0.9");
 		 	HttpEntity<Object> entity=new HttpEntity<>(headers);
 		 	String url=jobData.getAppscanData().getUrl()+ASE_API_APPLICATION_DETAILS.replaceAll("APPLICATIONID",jobData.getAppscanData().getAppid() );
-		 	response=restTemplate.exchange(url, HttpMethod.GET, entity, ApplicationName.class);
+		 	response=restTemplate.exchange(Urls.create(url, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(), HttpMethod.GET, entity, ApplicationName.class);
 		 	if (response.getStatusCode()==HttpStatus.NOT_FOUND) {
 		 	   throw new EntityNotFoundException(PushJobData.class, jobData.getAppscanData().getAppid(),"application not found");
 		 	}

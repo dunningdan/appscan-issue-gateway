@@ -7,6 +7,8 @@ package com.hcl.appscan.issuegateway.appscanprovider.asoc;
 
 import com.hcl.appscan.issuegateway.issues.AppScanIssue;
 import com.hcl.appscan.issuegateway.issues.PushJobData;
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,7 +39,7 @@ public class ASOCCommentHandler {
 		HttpHeaders headers = ASOCUtils.createASOCAuthorizedHeaders(jobData);
 		HttpEntity<String> entity = new HttpEntity<>(headers);
 
-		ResponseEntity<Comment> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, Comment.class);
+		ResponseEntity<Comment> responseEntity = restTemplate.exchange(Urls.create(url, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(), HttpMethod.GET, entity, Comment.class);
 		if (responseEntity.getStatusCode().is2xxSuccessful()) {
 			Comment[] responseArray = responseEntity.getBody().Items;
 			String[] comments = new String[responseArray.length];
@@ -79,7 +81,7 @@ public class ASOCCommentHandler {
 			Comment comment = new Comment();
 			comment.Comment = getCommentToken() + " created the following issue:\n" + result.getValue();
 			HttpEntity<Comment> entity = new HttpEntity<>(comment, headers);
-			ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
+			ResponseEntity<String> responseEntity = restTemplate.exchange(Urls.create(url, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(), HttpMethod.PUT, entity, String.class);
 			if (!responseEntity.getStatusCode().is2xxSuccessful()) {
 				errors.add("An error occured adding a comment to an AppScan issue. A status code of "
 						+ responseEntity.getStatusCodeValue() + " was received from " + url);

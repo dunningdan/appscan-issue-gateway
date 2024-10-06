@@ -4,6 +4,8 @@
  */
 package com.hcl.appscan.issuegateway.appscanprovider.ase;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -82,7 +84,7 @@ public class ASEIssueReportHandler {
         		.queryParam("ids","[\""+issueId+"\"]");
 	        
 	    URI theURI = urlBuilder.build().encode().toUri();
-		ResponseEntity<byte[]> responseEntity = restTemplate.exchange(theURI, HttpMethod.GET, entity, byte[].class);
+		ResponseEntity<byte[]> responseEntity = restTemplate.exchange(Urls.create(theURI, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(), HttpMethod.GET, entity, byte[].class);
 		if (responseEntity.getStatusCode().is2xxSuccessful()) {
 			return responseEntity;
 		} 
