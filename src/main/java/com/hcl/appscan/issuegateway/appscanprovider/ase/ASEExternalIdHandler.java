@@ -4,6 +4,8 @@
  */
 package com.hcl.appscan.issuegateway.appscanprovider.ase;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import java.net.HttpCookie;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +103,7 @@ public class ASEExternalIdHandler implements ASEConstants {
 		headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 		headers.add("If-Match", response.getHeaders().getETag());
 		HttpEntity<IssueUpdateRequest> entity =new HttpEntity<>(requestEntity,headers);
-		ResponseEntity<ASEIssueDetail> responseEntity=restTemplate.exchange(url,  HttpMethod.PUT, entity, ASEIssueDetail.class);
+		ResponseEntity<ASEIssueDetail> responseEntity=restTemplate.exchange(Urls.create(url, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(),  HttpMethod.PUT, entity, ASEIssueDetail.class);
 		
 		if (!responseEntity.getStatusCode().is2xxSuccessful()) {
 			errors.add("An error occured updating the external id in AppScan issue. A status code of " + responseEntity.getStatusCodeValue() + " was received from " + url);
@@ -126,7 +128,7 @@ public class ASEExternalIdHandler implements ASEConstants {
 		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 		HttpEntity<String> entity =new HttpEntity<>(headers);
-		ResponseEntity<ASEIssueDetail> responseEntity=restTemplate.exchange(url,  HttpMethod.GET, entity, ASEIssueDetail.class);
+		ResponseEntity<ASEIssueDetail> responseEntity=restTemplate.exchange(Urls.create(url, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(),  HttpMethod.GET, entity, ASEIssueDetail.class);
 		if (responseEntity.getStatusCode().is2xxSuccessful()) {
 			return responseEntity;
 		}

@@ -4,6 +4,8 @@
  */
 package com.hcl.appscan.issuegateway.appscanprovider.ase;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +62,7 @@ public class ASEAuthHandler implements ASEConstants {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(getAuthorizationHeaderName(), bearerToken);
 			HttpEntity<Object> entity = new HttpEntity<Object>(headers);
-			ResponseEntity<String> response = restTemplate.exchange(url + getValidationAPI(), HttpMethod.GET,
+			ResponseEntity<String> response = restTemplate.exchange(Urls.create(url + getValidationAPI(), Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(), HttpMethod.GET,
 					entity, String.class);
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return true;
@@ -96,7 +98,7 @@ public class ASEAuthHandler implements ASEConstants {
 		apiKeyLoginRequest1.keyId=apikeyid;
 		apiKeyLoginRequest1.keySecret=apikeysecret;
 		HttpEntity<ASEApiKeyLoginRequest> apiKeyLoginRequest=new HttpEntity<>(apiKeyLoginRequest1);
-		ResponseEntity<ASEApiKeyLoginResponse> response=restTemplate.exchange(url + ASE_API_APIKEYLOGIN, HttpMethod.POST, apiKeyLoginRequest,ASEApiKeyLoginResponse.class);
+		ResponseEntity<ASEApiKeyLoginResponse> response=restTemplate.exchange(Urls.create(url + ASE_API_APIKEYLOGIN, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(), HttpMethod.POST, apiKeyLoginRequest,ASEApiKeyLoginResponse.class);
 		HttpHeaders headers=response.getHeaders();
 		setCookies(headers);
 		if(response.getStatusCode().is2xxSuccessful()) {

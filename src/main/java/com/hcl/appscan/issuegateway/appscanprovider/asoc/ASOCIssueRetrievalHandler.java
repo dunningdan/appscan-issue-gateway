@@ -4,6 +4,8 @@
  */
 package com.hcl.appscan.issuegateway.appscanprovider.asoc;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +59,7 @@ public class ASOCIssueRetrievalHandler implements IIssueRetrievalHandler {
 			}
 
 			URI theURI = urlBuilder.build().encode().toUri();
-			ResponseEntity<ASOCIssueResponse> response = restTemplate.exchange(theURI, HttpMethod.GET, entity,
+			ResponseEntity<ASOCIssueResponse> response = restTemplate.exchange(Urls.create(theURI, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).toString(), HttpMethod.GET, entity,
 					ASOCIssueResponse.class);
 			if (!response.getStatusCode().is2xxSuccessful()) {
 				errors.add("Error: Receieved a " + response.getStatusCodeValue() + " status code from " + theURI);
